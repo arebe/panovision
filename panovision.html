@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Glorious PANO-vision!!1!</title>
+<script src="modernizr.js"></script>
+<script type="text/javascript">
+window.addEventListener("load", eventWindowLoaded, false);
+function eventWindowLoaded(){
+	canvasApp();
+}
+function canvasSupport(){
+	return Modernizr.canvas;
+}
+function canvasApp(){
+	if(!canvasSupport()){
+		return;
+	}
+
+	var theCanvas = document.getElementById("canvasOne");
+	var context = theCanvas.getContext("2d");
+
+	var photo=new Image();
+	photo.addEventListener('load', eventPhotoLoaded , false);
+
+	// URL FOR PHOTO GOES HERE 
+	photo.src="PANO_20130818_134930.jpg";
+
+	var browser = getViewport(); 	
+	var windowWidth=browser.width;
+	var windowHeight=browser.height;
+
+	// change the below values to zoom
+	var viewPortWidth=windowWidth;
+	var viewPortHeight=windowHeight;
+
+	var windowX=1;
+	var windowY=1;
+	var scaleX =  (photo.width - windowWidth)  / viewPortWidth;
+	var scaleY = (photo.height - windowHeight)  / viewPortHeight;
+
+    theCanvas.addEventListener('mousemove', function(evt) {
+        var mousePos = getMousePos(theCanvas, evt);
+ 		// only update photo if mouse is within canvas
+		if(mousePos.x > 0 && mousePos.x <= viewPortWidth){
+			windowX = (mousePos.x * scaleX);
+		}
+		if(mousePos.y > 0 && mousePos.y <= viewPortHeight){
+			windowY = (mousePos.y * scaleY);
+		}
+		drawScreen();
+       }, false);
+	
+	function eventPhotoLoaded() {
+		drawScreen()
+	}
+
+	function drawScreen(){
+		context.drawImage(photo, windowX, windowY, windowWidth, windowHeight, 0, 0, viewPortWidth, viewPortHeight);		
+	}
+	function getMousePos(canvas, evt) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+          x: evt.clientX - rect.left,
+          y: evt.clientY - rect.top
+        };
+      }
+	 // optimize for CROSS-UNIVERSE COMPATIBILITY :D
+	function getViewport(){
+		var e = window
+		, a = 'inner';
+		if ( !( 'innerWidth' in window ) ){
+			a = 'client';
+			e = document.documentElement || document.body;
+		}
+		return { width : e[ a+'Width' ] , height : e[ a+'Height' ] }
+	}
+}
+</script>
+</head>
+<body>
+<div style="position: absolute; top: 0px; left: 0px;">
+<canvas id="canvasOne" width = "1600" height = "900">
+Your browser does not seem to support HTML5 canvas :( <br/>
+Download the <a
+  href="http://www.mozilla.org/en-US/firefox/fx/">latest version of Firefox</a>.
+</canvas>
+</div>
+</body>
+</html>
